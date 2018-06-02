@@ -2,14 +2,14 @@
 require_once __DIR__.'/homeassistant_conf.php';
 
 class Response{
-	
+
 	public $result;
 	public $name;
 	public $deviceId;
 	public $errorCode;
 	public $message;
 	public $powerstate;
-	public function put_query_response($result,$properties,$name,$deviceId,$errorCode,$message) { 
+	public function put_query_response($result,$properties,$name,$deviceId,$errorCode,$message) {
 		$this->result = $result;
 		$this->name = $name;
 		$this->deviceId = $deviceId;
@@ -50,7 +50,7 @@ class Response{
 		        $this->errorCode = "DEVICE_NOT_SUPPORT_FUNCTION";
 			$this->message = "not support";
 			$this->result = FALSE;
-			break;	
+			break;
 		case "QueryHumidityResponse":
 			if($properties!="")
 			{
@@ -75,31 +75,31 @@ class Response{
 		        $this->errorCode = "DEVICE_NOT_SUPPORT_FUNCTION";
 			$this->message = "not support";
 			$this->result = FALSE;
-			break;	
+			break;
 		case "QueryChannelResponse":
 		        $this->errorCode = "DEVICE_NOT_SUPPORT_FUNCTION";
 			$this->message = "not support";
 			$this->result = FALSE;
-			break;	
+			break;
 		case "QueryModeResponse":
 		        $this->errorCode = "DEVICE_NOT_SUPPORT_FUNCTION";
 			$this->message = "not support";
 			$this->result = FALSE;
-			break;	
+			break;
 		default:
 		        $this->errorCode = "DEVICE_NOT_SUPPORT_FUNCTION";
 			$this->message = "not support";
 			$this->result = FALSE;
-			break;	
+			break;
 		}
 		//$this->result->result = $result;
 		//$this->result->name = $name;
 		//$this->result->deviceId = $deviceId;
 		//$this->result->errorCode = $errorCode;
 		//$this->result->message = $message;
-	} 
-		
-	public function put_control_response($result,$name,$deviceId,$errorCode,$message) { 
+	}
+
+	public function put_control_response($result,$name,$deviceId,$errorCode,$message) {
 		$this->result = $result;
 		$this->name = $name;
 		$this->deviceId = $deviceId;
@@ -110,8 +110,8 @@ class Response{
 		//$this->result->deviceId = $deviceId;
 		//$this->result->errorCode = $errorCode;
 		//$this->result->message = $message;
-	} 
-	
+	}
+
 }
 
 function  Device_control($obj)
@@ -198,15 +198,12 @@ function  Device_control($obj)
 		);
 	$context = stream_context_create($opts);
 	$http_post = URL."/api/services/".$device_ha."/".$action."?api_password=".PASS;
-	$myfile = fopen("code.txt", "w");
-	fwrite($myfile, $http_post);
-	fclose($myfile);
 	error_log($http_post);
 	$pdt_response = file_get_contents($http_post, false, $context);
 	$response = new Response();
-	$response->put_control_response(True,$response_name,$applianceId,"","");	
+	$response->put_control_response(True,$response_name,$applianceId,"","");
 	return $response;
-	
+
 }
 
 function  Device_status($obj)
@@ -226,6 +223,9 @@ function  Device_status($obj)
 		break;
 	case 'media_player':
 		$device_ha='media_player';
+		break;
+	case 'sensor':
+		$device_ha='sensor';
 		break;
 	default:
 		break;
@@ -248,7 +248,7 @@ function  Device_status($obj)
 	case 'anion':
 	case 'effluent':
 	case 'mode':
-	
+
 	default:
 		$action = 'states';
 	}
@@ -259,12 +259,12 @@ function  Device_status($obj)
 		$response->put_query_response(False,"",$response_name,$applianceId,"not support","action or device not support,name:".$name." device:".substr($applianceId,0,stripos($applianceId,".")));
 		return $response;
         }
-	 
+
 	$query_response = file_get_contents(URL."/api/".$action."/".$applianceId."?api_password=".PASS);
-        $state = json_decode($query_response)->state; 	
+        $state = json_decode($query_response)->state;
 	error_log($state);
 	$response = new Response();
         $response->put_query_response(True,$state,$response_name,$applianceId,"","");
-	return $response; 
+	return $response;
 
 }
