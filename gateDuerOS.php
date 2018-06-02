@@ -80,21 +80,21 @@ switch($obj->header->namespace){
 					"manufacturerName"  =>  "miflora",
 					"modelName"  =>  "花花草草温度",
 					"version"  =>  "1.0"
-			        ),
-			        array(
-				        "actions"  =>  array("getHumidity"),
-				        "applianceTypes"  => array("AIR_MONITOR"),
-				        "additionalApplianceDetails"  =>  array(),
-				        "applianceId"  =>  "sensor.plant_moisture",
-				        "friendlyDescription" =>  "湿度",
-				        "friendlyName"  =>  "花花草草湿度",
-				        "isReachable"  =>  true,
-				        "manufacturerName"  =>  "miflora",
-				        "modelName"  =>  "花花草草湿度",
-				        "version"  =>  "1.0"
-			        ),
-			        array(
-				        "actions"  =>  array("getWaterQuality"),
+				),
+				array(
+					"actions"  =>  array("getHumidity"),
+					"applianceTypes"  => array("AIR_MONITOR"),
+					"additionalApplianceDetails"  =>  array(),
+					"applianceId"  =>  "sensor.plant_moisture",
+					"friendlyDescription" =>  "湿度",
+					"friendlyName"  =>  "花花草草湿度",
+					"isReachable"  =>  true,
+					"manufacturerName"  =>  "miflora",
+					"modelName"  =>  "花花草草湿度",
+					"version"  =>  "1.0"
+				),
+				array(
+					"actions"  =>  array("getWaterQuality"),
 					"applianceTypes"  => array("AIR_MONITOR"),
 					"additionalApplianceDetails"  =>  array(),
 					"applianceId"  =>  "sensor.plant_conductivity",
@@ -104,7 +104,7 @@ switch($obj->header->namespace){
 					"manufacturerName"  =>  "miflora",
 					"modelName"  =>  "花花草草电导率",
 					"version"  =>  "1.0"
-		  		),
+				),
 				array(
 					"actions"  =>  array("getRunningStatus"),
 					"applianceTypes"  => array("AIR_MONITOR"),
@@ -116,7 +116,8 @@ switch($obj->header->namespace){
 					"manufacturerName"  =>  "miflora",
 					"modelName"  =>  "花花草草电量",
 					"version"  =>  "1.0"
-		  		)
+				)
+			)
 		);
 		//$payload = json_encode($payload);
 		$resultStr = json_encode(array("header" => $header, "payload" => $payload));
