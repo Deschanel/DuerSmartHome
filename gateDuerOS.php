@@ -139,16 +139,16 @@ switch($obj->header->namespace){
 		$result = Device_status($obj);
 		if($result->result == "True" ){
 			$header = array(
-					"namespace"       =>  "DuerOS.ConnectedHome.Query",
-					"name"            =>  $result->name,
-					"messageId "      =>  $messageId,
-					"payloadVersion"  =>  "1"
+				"namespace"       =>  "DuerOS.ConnectedHome.Query",
+				"name"            =>  $result->name,
+				"messageId "      =>  $messageId,
+				"payloadVersion"  =>  "1"
 			);
 			$payload = array(
-					$result->intention  => array(
-							"value"   =>  $result->value,
-							"scale"   =>  $result->scale
-					)
+				$result->intention  => array(
+					"value"   =>  $result->value,
+					"scale"   =>  $result->scale
+				)
 			);
 			$resultStr = json_encode(array("header" => $header, "payload" => $payload));
 		}
