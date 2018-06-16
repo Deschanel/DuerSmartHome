@@ -124,7 +124,7 @@ switch($obj->header->namespace){
 		break;
 	case 'DuerOS.ConnectedHome.Control':
 		$result = Device_control($obj);
-		if($result->result == "True" ){
+		if($result->result == "True"){
 			$header = array(
 				"namespace"           =>    "DuerOS.ConnectedHome.Control",
 				"name"                       =>    $result->name,
@@ -137,19 +137,61 @@ switch($obj->header->namespace){
 		break;
 	case 'DuerOS.ConnectedHome.Query':
 		$result = Device_status($obj);
-		if($result->result == "True" ){
+		if($result->entity_id === $obj->payload->appliance->applianceId){
 			$header = array(
 				"namespace"       =>  "DuerOS.ConnectedHome.Query",
 				"name"            =>  $result->name,
 				"messageId "      =>  $messageId,
 				"payloadVersion"  =>  "1"
 			);
-			$payload = array(
-				$result->intention  => array(
-					"value"   =>  $result->value,
-					"scale"   =>  $result->scale
-				)
-			);
+			if($obj->header->name === "GetAirQualityIndexRequest"){
+				$payload = array(
+					"AQI" => array("value" => $result->state)
+				);
+			}elseif($obj->header->name === "GetAirPM25Request"){
+				$payload = array(
+					"PM25" => array("value" => $result->state)
+				);
+			}elseif($obj->header->name === "GetCO2QuantityRequest"){
+				$payload = array(
+					"ppm" => array("value" => $result->state)
+				);
+			}elseif($obj->header->name === "GetHumidityRequest"){
+				$payload = array(
+					"humidity" => array("value" => $result->state)
+				);
+			}elseif($obj->header->name === "GetTemperatureReadingRequest"){
+				$payload = array(
+					"temperatureReading" => array("value" => $result->state, "scale" => "CELSIUS")
+				);
+			}elseif($obj->header->name === "GetTargetTemperatureRequest"){
+				$payload = array(
+					"targetTemperature" => array("value" => $result->state, "scale" => "CELSIUS"),
+					"temperatureMode"   => array("value" => $result->state, "friendlyName" => $result->mode)
+				);
+			}elseif($obj->header->name === "GetRunningTimeRequest"){
+				$payload = array(
+					"totalTimeInSeconds" => array("value" => $result->state)
+				);
+			}elseif($obj->header->name === "GetTimeLeftRequest"){
+				$payload = array(
+					"timeLeftInSeconds" => array("value" => $result->state)
+				);
+			}elseif($obj->header->name === "GetRunningStatusRequest"){
+				$payload = array(
+					"runningState" => array("value" => $result->state)
+				);
+			}elseif($obj->header->name === "GetElectricityCapacityRequest"){
+				$payload = array(
+					"attributes" => array("name" => "electricityCapacity", "value" => $result->state, "scale" => "%", "timestampOfSample" => time(), "uncertaintyInMilliseconds" => 1000)
+				);
+			}else{
+				$payload = array(
+						"value"   =>  $result->value,
+						"scale"   =>  $result->scale
+					)
+				);
+			}
 			$resultStr = json_encode(array("header" => $header, "payload" => $payload));
 		}
 		break;
