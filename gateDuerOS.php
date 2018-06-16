@@ -138,22 +138,20 @@ switch($obj->header->namespace){
 	case 'DuerOS.ConnectedHome.Query':
 		$result = Device_status($obj);
 		if($result->result == "True" ){
-			$str = '{
-	　　			"header": {
-	　　   				 "namespace": "DuerOS.ConnectedHome.Query",
-	　　   				 "name": "%s",
-	　　   				 "messageId": "%s",
-	　　   				 "payloadVersion": "1"
-				},
-	　　			"payload": {
-	　　   				 "%s": {
-	　　   				 	"value": %s,
-	　　   				 	"scale": "%s"
-	　　   				 }
-				}
-			}';
+			$header = array(
+					"namespace"       =>  "DuerOS.ConnectedHome.Query",
+					"name"            =>  $result->name,
+					"messageId "      =>  $messageId,
+					"payloadVersion"  =>  "1"
+			);
+			$payload = array(
+					$result->intention  => array(
+							"value"   =>  $result->value,
+							"scale"   =>  $result->scale
+					)
+			);
+			$resultStr = json_encode(array("header" => $header, "payload" => $payload));
 		}
-		$resultStr = sprintf($str,$result->name, $messageId, $result->intention, $result->value, $result->scale);
 		break;
 	default:
 		$resultStr='Nothing return,there is an error~!!';
