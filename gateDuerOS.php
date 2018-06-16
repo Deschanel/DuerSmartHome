@@ -137,10 +137,12 @@ switch($obj->header->namespace){
 		break;
 	case 'DuerOS.ConnectedHome.Query':
 		$result = Device_status($obj);
+		$name = substr( $obj->header->name, 0, -7);
+		$response_name = $name.'Response';
 		if($result->entity_id === $obj->payload->appliance->applianceId){
 			$header = array(
 				"namespace"       =>  "DuerOS.ConnectedHome.Query",
-				"name"            =>  $result->name,
+				"name"            =>  $response_name,
 				"messageId "      =>  $messageId,
 				"payloadVersion"  =>  "1"
 			);
@@ -189,10 +191,11 @@ switch($obj->header->namespace){
 				$payload = array(
 						"value"   =>  $result->value,
 						"scale"   =>  $result->scale
-					)
-				);
+					);
 			}
 			$resultStr = json_encode(array("header" => $header, "payload" => $payload));
+		}else{
+			$resultStr = $result;
 		}
 		break;
 	default:

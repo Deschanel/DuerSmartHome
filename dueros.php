@@ -211,8 +211,6 @@ function  Device_status($obj)
 	$applianceId=$obj->payload->appliance->applianceId;
 	$action = '';
 	$device_ha = '';
-	$name = substr( $obj->header->name, 0, -7);
-	$response_name = $name.'Confirmation';
 	switch(substr($applianceId,0,stripos($applianceId,".")))
 	{
 	case 'switch':
@@ -261,10 +259,8 @@ function  Device_status($obj)
         }
 
 	$query_response = file_get_contents(URL."/api/".$action."/".$applianceId."?api_password=".PASS);
-        $state = json_decode($query_response)->state;
+  $state = json_decode($query_response)->state;
 	error_log($state);
-	$response = new Response();
-        $response->put_query_response(True,$state,$response_name,$applianceId,"","");
-	return $response;
+	return json_decode($query_response);
 
 }
