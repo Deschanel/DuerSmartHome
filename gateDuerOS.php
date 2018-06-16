@@ -116,6 +116,18 @@ switch($obj->header->namespace){
 					"manufacturerName"  =>  "miflora",
 					"modelName"  =>  "花花草草电量",
 					"version"  =>  "1.0"
+				),
+				array(
+					"actions"  =>  array("getTemperatureReading"),
+					"applianceTypes"  => array("AIR_MONITOR"),
+					"additionalApplianceDetails"  =>  array(),
+					"applianceId"  =>  "sensor.temperature",
+					"friendlyDescription" =>  "环境温度",
+					"friendlyName"  =>  "环境温度",
+					"isReachable"  =>  true,
+					"manufacturerName"  =>  "nodemcu",
+					"modelName"  =>  "环境温度",
+					"version"  =>  "1.0"
 				)
 			)
 		);
