@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__.'/serverDuerOS.php';
+require_once __DIR__.'/server.php';
 $_POST['grant_type']=$_GET['grant_type'];
 $_POST['code']=$_GET['code'];
 $_POST['redirect_uri']=$_GET['redirect_uri'];
