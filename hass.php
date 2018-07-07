@@ -1,6 +1,6 @@
 <?php
-const URL="http://chenzhuo.pw:8123";
-const PASS="1314..qq";
+const URL="URL:8123";
+const PASS="password";
 
 const DEVICES = array(
   "discoveredAppliances"  =>  array(
