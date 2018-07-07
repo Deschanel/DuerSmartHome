@@ -1,266 +1,187 @@
 <?php
-require_once __DIR__.'/homeassistant_conf.php';
 
-class Response{
+class dueros{
+	private $obj, $devices, $hassURL, $hassPASS;
 
-	public $result;
-	public $name;
-	public $deviceId;
-	public $errorCode;
-	public $message;
-	public $powerstate;
-	public function put_query_response($result,$properties,$name,$deviceId,$errorCode,$message) {
-		$this->result = $result;
-		$this->name = $name;
-		$this->deviceId = $deviceId;
-		$this->errorCode = $errorCode;
-		$this->message = $message;
-		switch($name)
-		{
-		case "QueryResponse":
-			if($properties!="")
-			{
-				$this->powerstate=$properties;
-			}else
-			{
-		                $this->errorCode = "SERVICE_ERROR";
-				$this->message = "No temperature return";
-			}
-			break;
-		case "QueryTemperatureResponse":
-			if($properties!="")
-			{
-				$this->properties=$properties;
-			}else
-			{
-		                $this->errorCode = "SERVICE_ERROR";
-				$this->message = "No temperature return";
-			}
-			break;
-		case "QueryPowerstateResponse":
-			if($properties!="")
-			{
-				$this->properties=$properties;
-			}else
-			{
-		                $this->errorCode = "SERVICE_ERROR";
-				$this->message = "No powerstate return";
-			}
-		case "QueryColorResponse":
-		        $this->errorCode = "DEVICE_NOT_SUPPORT_FUNCTION";
-			$this->message = "not support";
-			$this->result = FALSE;
-			break;
-		case "QueryHumidityResponse":
-			if($properties!="")
-			{
-				$this->properties=$properties;
-			}else
-			{
-		                $this->errorCode = "SERVICE_ERROR";
-				$this->message = "No temperature return";
-			}
-			break;
-		case "QueryPm2.5Response":
-			if($properties!="")
-			{
-				$this->properties=$properties;
-			}else
-			{
-		                $this->errorCode = "SERVICE_ERROR";
-				$this->message = "No temperature return";
-			}
-			break;
-		case "QueryBrightnessResponse":
-		        $this->errorCode = "DEVICE_NOT_SUPPORT_FUNCTION";
-			$this->message = "not support";
-			$this->result = FALSE;
-			break;
-		case "QueryChannelResponse":
-		        $this->errorCode = "DEVICE_NOT_SUPPORT_FUNCTION";
-			$this->message = "not support";
-			$this->result = FALSE;
-			break;
-		case "QueryModeResponse":
-		        $this->errorCode = "DEVICE_NOT_SUPPORT_FUNCTION";
-			$this->message = "not support";
-			$this->result = FALSE;
-			break;
-		default:
-		        $this->errorCode = "DEVICE_NOT_SUPPORT_FUNCTION";
-			$this->message = "not support";
-			$this->result = FALSE;
-			break;
+	public function __construct($obj, $devices, $hassURL, $hassPASS){
+		$this->obj = $obj;
+		$this->devices = $devices;
+		$this->hassURL = $hassURL;
+		$this->hassPASS = $hassPASS;
+	}
+
+		//获得messageID
+		public function getMessageID(){
+			$chars = md5(uniqid(mt_rand(), true));
+			$uuid  = substr($chars,0,8) . '-';
+			$uuid .= substr($chars,8,4) . '-';
+			$uuid .= substr($chars,12,4) . '-';
+			$uuid .= substr($chars,16,4) . '-';
+			$uuid .= substr($chars,20,12);
+			return $uuid;
 		}
-		//$this->result->result = $result;
-		//$this->result->name = $name;
-		//$this->result->deviceId = $deviceId;
-		//$this->result->errorCode = $errorCode;
-		//$this->result->message = $message;
-	}
 
-	public function put_control_response($result,$name,$deviceId,$errorCode,$message) {
-		$this->result = $result;
-		$this->name = $name;
-		$this->deviceId = $deviceId;
-		$this->errorCode = $errorCode;
-		$this->message = $message;
-		//$this->result->result = $result;
-		//$this->result->name = $name;
-		//$this->result->deviceId = $deviceId;
-		//$this->result->errorCode = $errorCode;
-		//$this->result->message = $message;
-	}
-
-}
-
-function  Device_control($obj)
-{
-	$applianceId=$obj->payload->appliance->applianceId;
-	$action = '';
-	$device_ha = '';
-	$name = substr( $obj->header->name, 0, -7);
-	$response_name = $name.'Confirmation';
-	switch(substr($applianceId, 0, stripos($applianceId,".")))
-	{
-	case 'switch':
-		$device_ha='switch';
-		break;
-	case 'light':
-		$device_ha='light';
-		break;
-	case 'media_player':
-		$device_ha='media_player';
-		break;
-	default:
-		break;
-	}
-	switch($name)
-	{
-	case 'TurnOn':
-		$action='turn_on';
-		break;
-	case 'TurnOff':
-		$action='turn_off';
-		break;
-	case 'TimingTurnOn':
-		#$action='set_bright';
-		break;
-	case 'TimingTurnOff':
-		#$action='brightness_up';
-		break;
-	case 'Pause':
-		#$action='brightness_down';
-		break;
-	case 'AdjustUpVolume':
-		$action='volume_up';
-		break;
-	case 'AdjustDownVolume':
-		$action='volume_down';
-		break;
-	case 'SetColor':
-		$action='set_color';
-		break;
-	case 'IncrementBrightnessPercentage':
-		$action='brightness_up';
-		break;
-	case 'DecrementBrightnessPercentage':
-		$action='brightness_down';
-		break;
-	case 'IncrementTemperature':
-		$action='temperature_up';
-		break;
-	case 'DecrementTemperature':
-		$action='temperature_down';
-		break;
-	case 'SetTemperature':
-		$action='set_temperature';
-		break;
-	default:
-		break;
-	}
-	if($action=="" || $device_ha=="")
-	{
-		$response = new Response();
-		$response->put_control_response(False,$response_name, $applianceId,"not support","action or device not support,name:".$name." device:".substr($applianceId,0,stripos($applianceId,".")));
-		return $response;
-	}
-	$post_array = array (
-	"entity_id" => $applianceId,
-	);
-    	$post_string = json_encode($post_array);
-    	$opts = array(
-		'http' => array(
-			'method' => "POST",
-        		'header' => "Content-Type: application/json",
-        		'content'=> $post_string
-            		)
+	//设备发现
+	public function discovery(){
+		$header = array(
+			"namespace"           =>    "DuerOS.ConnectedHome.Discovery",
+			"name"                       =>    "DiscoverAppliancesResponse",
+			"messageId "            =>    $this->getMessageID(),
+			"payloadVersion"  =>    "1"
 		);
-	$context = stream_context_create($opts);
-	$http_post = URL."/api/services/".$device_ha."/".$action."?api_password=".PASS;
-	error_log($http_post);
-	$pdt_response = file_get_contents($http_post, false, $context);
-	$response = new Response();
-	$response->put_control_response(True,$response_name,$applianceId,"","");
-	return $response;
-
-}
-
-function  Device_status($obj)
-{
-	$applianceId=$obj->payload->appliance->applianceId;
-	$action = '';
-	$device_ha = '';
-	switch(substr($applianceId,0,stripos($applianceId,".")))
-	{
-	case 'switch':
-		$device_ha='switch';
-		break;
-	case 'light':
-		$device_ha='light';
-		break;
-	case 'media_player':
-		$device_ha='media_player';
-		break;
-	case 'sensor':
-		$device_ha='sensor';
-		break;
-	default:
-		break;
+		return json_encode(array("header" => $header, "payload" => $this->devices));
 	}
 
-	switch($name)
-	{
-	case 'powerstate':
-	case 'color':
-	case 'temperature':
-	case 'windspeed':
-	case 'brightness':
-	case 'fog':
-	case 'humidity':
-	case 'pm2.5':
-	case 'channel':
-	case 'number':
-	case 'direction':
-	case 'angle':
-	case 'anion':
-	case 'effluent':
-	case 'mode':
-
-	default:
-		$action = 'states';
+	//设备控制
+	public function control(){
+		$payload = array();
+		$applianceId=$this->obj->payload->appliance->applianceId;
+		$action = '';
+		//$device_ha = '';
+		$additionalApplianceDetails = $this->obj->payload->appliance->additionalApplianceDetails;
+		$name = substr( $this->obj->header->name, 0, -7);
+		//$response_name = $name.'Confirmation';
+		$deviceType = substr( $applianceId, 0, stripos($applianceId,".") );
+		switch($name){
+			case 'TurnOn':
+				$action = 'turn_on';
+				$payload["entity_id"] = $applianceId;
+				break;
+			case 'TurnOff':
+				$action='turn_off';
+				$payload["entity_id"] = $applianceId;
+				break;
+			case 'TimingTurnOn':
+				$nowTime = time();
+				$actionTime = $this->obj->payload->timestamp->value;
+				sleep(int($actionTime) - int($nowTime));
+				$action='turn_on';
+				$payload["entity_id"] = $applianceId;
+				break;
+			case 'TimingTurnOff':
+				$nowTime = time();
+				$actionTime = $this->obj->payload->timestamp->value;
+				sleep( int($actionTime) - int($nowTime) );
+				$action='turn_off';
+				$payload["entity_id"] = $applianceId;
+				break;
+			case 'Pause':
+				//$action =
+				break;
+			case 'Continue':
+				//$action =
+				break;
+			case 'SetBrightnessPercentage':
+				//$privious = $this->priviousState();
+				if(!empty($additionalApplianceDetails["SetBrightnessPercentage"]) && !empty($this->obj->payload->brightness->value)){
+					$detail = $additionalApplianceDetails["SetBrightnessPercentage"];
+					$payload[$detail] = $this->obj->payload->brightness->value;
+				}
+				$payload["entity_id"] = $applianceId;
+				$action = 'turn_on';
+				break;
+			case 'IncrementBrightnessPercentage':
+			//	$privious = $this->priviousState();
+				//$action='brightness_up';
+				break;
+			case 'DecrementBrightnessPercentage':
+			//	$privious = $this->priviousState();
+			//	$action='brightness_down';
+				break;
+			case 'SetColor':
+				if(!empty($additionalApplianceDetails["setColor"]) && !empty($this->obj->payload->color)){
+					$detail = $additionalApplianceDetails["setColor"];
+					$payload[$detail] = $this->HSVtoRGB( $this->object2array($this->obj->payload->color) );
+				}
+				$payload["entity_id"] = $applianceId;
+				$action='turn_on';
+				break;
+			case 'IncrementTemperature':
+				//$action='temperature_up';
+				break;
+			case 'IncrementTemperature':
+			//	$action='temperature_up';
+				break;
+			// more
+			default:
+		}
+		if(!empty($action) && !empty($deviceType)){
+			return $this->response($deviceType, $action, $payload);
+		}else{
+			return false;
+		}
 	}
-
-	 if($action=="" || $device_ha=="")
-        {
-                $response = new Response();
-		$response->put_query_response(False,"",$response_name,$applianceId,"not support","action or device not support,name:".$name." device:".substr($applianceId,0,stripos($applianceId,".")));
-		return $response;
-        }
-
-	$query_response = file_get_contents(URL."/api/".$action."/".$applianceId."?api_password=".PASS);
-  $state = json_decode($query_response)->state;
-	error_log($state);
-	return json_decode($query_response);
-
+  //与hass传输
+	public function response($deviceType, $action, $payload){
+			//$opts = array('http' => array('method' => "POST", 'header' => "Content-Type: application/json", 'content'=> json_encode($payload)));
+		//$context = stream_context_create($opts);
+		$http_url = $this->hassURL."/api/services/".$deviceType."/".$action."?api_password=".$this->hassPASS;
+			error_log($http_url);
+			//file_get_contents($http_post, false, $context);
+			$ch = curl_init($http_url);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+			curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($payload));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+			curl_setopt($ch, CURLOPT_HEADER, 0);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: '.strlen(json_encode($payload))));
+			$result = curl_exec($ch);
+			if(curl_errno($ch)){
+				print curl_error($ch);
+			}
+			curl_close($ch);
+			//var_dump($result);
+			return $result;
+	}
+  //如名字
+	public function object2array($object) {
+	  if (is_object($object)) {
+	      foreach ($object as $key => $value) {
+	          $array[$key] = $value;
+	      }
+	  }else {
+	      $array = $object;
+	  }
+	  return $array;
+	}
+  //如名字
+	private function HSVtoRGB(array $hsv) {
+		$keys = array_keys($hsv);
+		$H = $array[$keys[0]];
+		$S = $array[$keys[1]];
+		$V = $array[$keys[2]];
+	  //1
+	  $H *= 6;
+	  //2
+	  $I = floor($H);
+	  $F = $H - $I;
+	  //3
+	  $M = $V * (1 - $S);
+	  $N = $V * (1 - $S * $F);
+	  $K = $V * (1 - $S * (1 - $F));
+	  //4
+	  switch ($I) {
+	      case 0:
+	          list($R,$G,$B) = array($V,$K,$M);
+	          break;
+	      case 1:
+	          list($R,$G,$B) = array($N,$V,$M);
+	          break;
+	      case 2:
+	          list($R,$G,$B) = array($M,$V,$K);
+	          break;
+	      case 3:
+	          list($R,$G,$B) = array($M,$N,$V);
+	          break;
+	      case 4:
+	          list($R,$G,$B) = array($K,$M,$V);
+	          break;
+	      case 5:
+	      case 6: //for when $H=1 is given
+	          list($R,$G,$B) = array($V,$M,$N);
+	          break;
+	  }
+	  return array(255*$R, 255*$G, 255*$B);
+	}
 }
