@@ -1,25 +1,25 @@
 <?php
 
 class dueros{
-	private $obj, $devices, $hassURL, $hassPASS;
+    private $obj, $devices, $hassURL, $hassPASS;
 
-	public function __construct($obj, $devices, $hassURL, $hassPASS){
-		$this->obj = $obj;
-		$this->devices = $devices;
-		$this->hassURL = $hassURL;
-		$this->hassPASS = $hassPASS;
-	}
+    public function __construct($obj, $devices, $hassURL, $hassPASS){
+        $this->obj = $obj;
+        $this->devices = $devices;
+        $this->hassURL = $hassURL;
+        $this->hassPASS = $hassPASS;
+    }
 
-		//获得messageID
-		public function getMessageID(){
-			$chars = md5(uniqid(mt_rand(), true));
-			$uuid  = substr($chars,0,8) . '-';
-			$uuid .= substr($chars,8,4) . '-';
-			$uuid .= substr($chars,12,4) . '-';
-			$uuid .= substr($chars,16,4) . '-';
-			$uuid .= substr($chars,20,12);
-			return $uuid;
-		}
+    //获得messageID
+    public function getMessageID(){
+        $chars = md5(uniqid(mt_rand(), true));
+        $uuid  = substr($chars,0,8) . '-';
+        $uuid .= substr($chars,8,4) . '-';
+        $uuid .= substr($chars,12,4) . '-';
+        $uuid .= substr($chars,16,4) . '-';
+        $uuid .= substr($chars,20,12);
+        return $uuid;
+    }
 
 	//设备发现
 	public function discovery(){
@@ -34,7 +34,7 @@ class dueros{
 
 	//设备控制
 	public function control(){
-		$payload = array();
+    $payload = array();
 		$applianceId=$this->obj->payload->appliance->applianceId;
 		$action = '';
 		//$device_ha = '';
@@ -65,7 +65,7 @@ class dueros{
 				$action='turn_off';
 				$payload["entity_id"] = $applianceId;
 				break;
-			case 'Pause':
+      case 'Pause':
 				//$action =
 				break;
 			case 'Continue':
@@ -104,20 +104,60 @@ class dueros{
 				break;
 			// more
 			default:
+				break;
 		}
 		if(!empty($action) && !empty($deviceType)){
-			return $this->response($deviceType, $action, $payload);
+			return $this->response($deviceType, $action, $payload, "services");
 		}else{
 			return false;
 		}
 	}
+
+  public function status(){
+		$payload = array();
+		$applianceId=$this->obj->payload->appliance->applianceId;
+		$action = '';
+		$additionalApplianceDetails = $this->obj->payload->appliance->additionalApplianceDetails;
+		$name = substr( $this->obj->header->name, 3, -7);
+		$deviceType =  ""; //substr( $applianceId, 0, stripos($applianceId,".") );
+		$action = ""
+		$payload = $applianceId;  //初始化payload
+		switch($name){
+			case "GetAirQualityIndex":
+				break;
+			case "GetAirPM25":
+				break;
+      case "GetAirPM10":
+			  break;
+			case "GetCO2Quantity":
+				break;
+			case "GetHumidity":
+				break;
+			case "GetTemperatureReading":
+				break;
+			case "GetTargetTemperature":
+				break;
+			case "GetRunningTime":
+				break;
+			case "GetTimeLeft":
+				break;
+			case "GetRunningStatus":
+				break;
+			case "GetElectricityCapacity":
+				break;
+			case "GetWaterQuality":
+				break;
+			default:
+				break;
+		}
+		return response($deviceType, $action, $payload, "states");
+	}
+
   //与hass传输
-	public function response($deviceType, $action, $payload){
-			//$opts = array('http' => array('method' => "POST", 'header' => "Content-Type: application/json", 'content'=> json_encode($payload)));
-		//$context = stream_context_create($opts);
-		$http_url = $this->hassURL."/api/services/".$deviceType."/".$action."?api_password=".$this->hassPASS;
+	public function response($deviceType, $action, $payload, $callName){
+		if($callName == "services"){
+		  $http_url = $this->hassURL."/api/".$callName."/".$deviceType."/".$action."?api_password=".$this->hassPASS;
 			error_log($http_url);
-			//file_get_contents($http_post, false, $context);
 			$ch = curl_init($http_url);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
@@ -131,9 +171,26 @@ class dueros{
 				print curl_error($ch);
 			}
 			curl_close($ch);
-			//var_dump($result);
+		}elseif($callName == "states") {
+			$http_url = $this->hassURL."/api/".$callName."/".$payload."?api_password=".$this->hassPASS;
+			error_log($http_url);
+			$ch = curl_init($http_url);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+			curl_setopt($ch, CURLOPT_HEADER, 0);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: '.strlen($payload)));
+			$result = curl_exec($ch);
+			$result = json_decode($result, true);
+			if(curl_errno($ch)){
+				print curl_error($ch);
+			}
+			curl_close($ch);
+		}
 			return $result;
 	}
+
   //如名字
 	public function object2array($object) {
 	  if (is_object($object)) {
