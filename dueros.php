@@ -11,7 +11,7 @@ class dueros{
     }
 
     //获得messageID
-    public function getMessageID(){
+		public function getMessageID(){
         $chars = md5(uniqid(mt_rand(), true));
         $uuid  = substr($chars,0,8) . '-';
         $uuid .= substr($chars,8,4) . '-';
@@ -21,26 +21,24 @@ class dueros{
         return $uuid;
     }
 
-	//设备发现
-	public function discovery(){
-		$header = array(
-			"namespace"           =>    "DuerOS.ConnectedHome.Discovery",
-			"name"                       =>    "DiscoverAppliancesResponse",
-			"messageId "            =>    $this->getMessageID(),
-			"payloadVersion"  =>    "1"
-		);
-		return json_encode(array("header" => $header, "payload" => $this->devices));
-	}
+		//设备发现
+		public function discovery(){
+			$header = array(
+				"namespace"           =>    "DuerOS.ConnectedHome.Discovery",
+				"name"                       =>    "DiscoverAppliancesResponse",
+				"messageId "            =>    $this->getMessageID(),
+				"payloadVersion"  =>    "1"
+			);
+			return json_encode(array("header" => $header, "payload" => $this->devices));
+		}
 
 	//设备控制
 	public function control(){
-    $payload = array();
+		$payload = array();
 		$applianceId=$this->obj->payload->appliance->applianceId;
 		$action = '';
-		//$device_ha = '';
 		$additionalApplianceDetails = $this->obj->payload->appliance->additionalApplianceDetails;
 		$name = substr( $this->obj->header->name, 0, -7);
-		//$response_name = $name.'Confirmation';
 		$deviceType = substr( $applianceId, 0, stripos($applianceId,".") );
 		switch($name){
 			case 'TurnOn':
@@ -65,7 +63,7 @@ class dueros{
 				$action='turn_off';
 				$payload["entity_id"] = $applianceId;
 				break;
-      case 'Pause':
+			case 'Pause':
 				//$action =
 				break;
 			case 'Continue':
@@ -81,12 +79,12 @@ class dueros{
 				$action = 'turn_on';
 				break;
 			case 'IncrementBrightnessPercentage':
-			//	$privious = $this->priviousState();
-				//$action='brightness_up';
+			//$privious = $this->priviousState();
+			//$action='brightness_up';
 				break;
 			case 'DecrementBrightnessPercentage':
-			//	$privious = $this->priviousState();
-			//	$action='brightness_down';
+				//$privious = $this->priviousState();
+				//$action='brightness_down';
 				break;
 			case 'SetColor':
 				if(!empty($additionalApplianceDetails["setColor"]) && !empty($this->obj->payload->color)){
@@ -100,9 +98,9 @@ class dueros{
 				//$action='temperature_up';
 				break;
 			case 'IncrementTemperature':
-			//	$action='temperature_up';
+				//$action='temperature_up';
 				break;
-			// more
+			//more
 			default:
 				break;
 		}
@@ -113,7 +111,8 @@ class dueros{
 		}
 	}
 
-  public function status(){
+	//查询状态
+	public function status(){
 		$payload = array();
 		$applianceId=$this->obj->payload->appliance->applianceId;
 		$action = '';
@@ -127,8 +126,8 @@ class dueros{
 				break;
 			case "GetAirPM25":
 				break;
-      case "GetAirPM10":
-			  break;
+			case "GetAirPM10":
+				break;
 			case "GetCO2Quantity":
 				break;
 			case "GetHumidity":
@@ -153,10 +152,10 @@ class dueros{
 		return response($deviceType, $action, $payload, "states");
 	}
 
-  //与hass传输
+	//与hass传输
 	public function response($deviceType, $action, $payload, $callName){
 		if($callName == "services"){
-		  $http_url = $this->hassURL."/api/".$callName."/".$deviceType."/".$action."?api_password=".$this->hassPASS;
+			$http_url = $this->hassURL."/api/".$callName."/".$deviceType."/".$action."?api_password=".$this->hassPASS;
 			error_log($http_url);
 			$ch = curl_init($http_url);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -188,57 +187,58 @@ class dueros{
 			}
 			curl_close($ch);
 		}
-			return $result;
+		return $result;
 	}
 
-  //如名字
+	//如名字
 	public function object2array($object) {
-	  if (is_object($object)) {
-	      foreach ($object as $key => $value) {
-	          $array[$key] = $value;
-	      }
-	  }else {
-	      $array = $object;
-	  }
-	  return $array;
+		if (is_object($object)) {
+			foreach ($object as $key => $value) {
+				$array[$key] = $value;
+			}
+		}else {
+			$array = $object;
+		}
+		return $array;
 	}
-  //如名字
+	//如名字
 	private function HSVtoRGB(array $hsv) {
 		$keys = array_keys($hsv);
 		$H = $array[$keys[0]];
 		$S = $array[$keys[1]];
 		$V = $array[$keys[2]];
-	  //1
-	  $H *= 6;
-	  //2
-	  $I = floor($H);
-	  $F = $H - $I;
-	  //3
-	  $M = $V * (1 - $S);
-	  $N = $V * (1 - $S * $F);
-	  $K = $V * (1 - $S * (1 - $F));
-	  //4
-	  switch ($I) {
-	      case 0:
-	          list($R,$G,$B) = array($V,$K,$M);
-	          break;
-	      case 1:
-	          list($R,$G,$B) = array($N,$V,$M);
-	          break;
-	      case 2:
-	          list($R,$G,$B) = array($M,$V,$K);
-	          break;
-	      case 3:
-	          list($R,$G,$B) = array($M,$N,$V);
-	          break;
-	      case 4:
-	          list($R,$G,$B) = array($K,$M,$V);
-	          break;
-	      case 5:
-	      case 6: //for when $H=1 is given
-	          list($R,$G,$B) = array($V,$M,$N);
-	          break;
-	  }
-	  return array(255*$R, 255*$G, 255*$B);
+		//1
+		$H *= 6;
+		//2
+		$I = floor($H);
+		$F = $H - $I;
+		//3
+		$M = $V * (1 - $S);
+		$N = $V * (1 - $S * $F);
+		$K = $V * (1 - $S * (1 - $F));
+		//4
+		switch ($I) {
+			case 0:
+				list($R,$G,$B) = array($V,$K,$M);
+				break;
+			case 1:
+				list($R,$G,$B) = array($N,$V,$M);
+				break;
+			case 2:
+				list($R,$G,$B) = array($M,$V,$K);
+				break;
+			case 3:
+				list($R,$G,$B) = array($M,$N,$V);
+				break;
+			case 4:
+				list($R,$G,$B) = array($K,$M,$V);
+				break;
+			case 5:
+				break;
+			case 6: //for when $H=1 is given
+				list($R,$G,$B) = array($V,$M,$N);
+				break;
+		}
+		return array(255*$R, 255*$G, 255*$B);
 	}
 }
