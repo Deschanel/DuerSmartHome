@@ -123,6 +123,18 @@ const DEVICES = array(
       "manufacturerName"  =>  "nodemcu",
       "modelName"  =>  "彩色灯环",
       "version"  =>  "1.0"
+    ),
+    array(
+      "actions"  =>  array("getHumidity"),
+      "applianceTypes"  => array("AIR_MONITOR"),
+      "additionalApplianceDetails"  =>  array(),
+      "applianceId"  =>  "sensor.humidity",
+      "friendlyDescription" =>  "环境湿度",
+      "friendlyName"  =>  "环境湿度",
+      "isReachable"  =>  true,
+      "manufacturerName"  =>  "nodemcu",
+      "modelName"  =>  "环境温度",
+      "version"  =>  "1.0"
     )
   )
 );
