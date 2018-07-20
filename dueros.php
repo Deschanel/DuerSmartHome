@@ -179,7 +179,7 @@ class dueros{
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
 			curl_setopt($ch, CURLOPT_HEADER, 0);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: '.strlen($payload)));
+			//curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: '.strlen($payload)));
 			$result = curl_exec($ch);
 			$result = json_decode($result, true);
 			if(curl_errno($ch)){
