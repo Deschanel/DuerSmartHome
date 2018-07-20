@@ -149,7 +149,7 @@ class dueros{
 			default:
 				break;
 		}
-		return response($deviceType, $action, $payload, "states");
+		return $this->response($deviceType, $action, $payload, "states");
 	}
 
 	//与hass传输
