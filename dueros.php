@@ -119,7 +119,7 @@ class dueros{
 		$additionalApplianceDetails = $this->obj->payload->appliance->additionalApplianceDetails;
 		$name = substr( $this->obj->header->name, 3, -7);
 		$deviceType =  ""; //substr( $applianceId, 0, stripos($applianceId,".") );
-		$action = ""
+		$action = "";
 		$payload = $applianceId;  //初始化payload
 		switch($name){
 			case "GetAirQualityIndex":

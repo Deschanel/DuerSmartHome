@@ -72,7 +72,7 @@ function Hstatus($o, $d){
 				$payload = array( "humidity"=>array( "value" => ((int)$result["state"])/100 ) );
 				break;
 			case "GetTemperatureReadingRequest":
-				$payload = array( "temperatureReading"=>array( "value" => (float)$result["state"], "scale" => "CELSIUS" );
+				$payload = array( "temperatureReading"=>array( "value" => (float)$result["state"], "scale" => "CELSIUS" ));
 				break;
 			case "GetTargetTemperatureRequest":
 				break;
