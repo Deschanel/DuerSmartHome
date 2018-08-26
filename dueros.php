@@ -37,7 +37,7 @@ class dueros{
 		$payload = array();
 		$applianceId=$this->obj->payload->appliance->applianceId;
 		$action = '';
-		$additionalApplianceDetails = $this->obj->payload->appliance->additionalApplianceDetails;
+		$additionalApplianceDetails = $this->object2array($this->obj->payload->appliance->additionalApplianceDetails);
 		$name = substr( $this->obj->header->name, 0, -7);
 		$deviceType = substr( $applianceId, 0, stripos($applianceId,".") );
 		switch($name){
@@ -116,7 +116,7 @@ class dueros{
 		$payload = array();
 		$applianceId=$this->obj->payload->appliance->applianceId;
 		$action = '';
-		$additionalApplianceDetails = $this->obj->payload->appliance->additionalApplianceDetails;
+		$additionalApplianceDetails = $this->object2array($this->obj->payload->appliance->additionalApplianceDetails);
 		$name = substr( $this->obj->header->name, 3, -7);
 		$deviceType =  ""; //substr( $applianceId, 0, stripos($applianceId,".") );
 		$action = "";
@@ -204,9 +204,9 @@ class dueros{
 	//如名字
 	private function HSVtoRGB(array $hsv) {
 		$keys = array_keys($hsv);
-		$H = $array[$keys[0]];
-		$S = $array[$keys[1]];
-		$V = $array[$keys[2]];
+		$H = $hsv[$keys[0]];
+		$S = $hsv[$keys[1]];
+		$V = $hsv[$keys[2]];
 		//1
 		$H *= 6;
 		//2
@@ -234,7 +234,6 @@ class dueros{
 				list($R,$G,$B) = array($K,$M,$V);
 				break;
 			case 5:
-				break;
 			case 6: //for when $H=1 is given
 				list($R,$G,$B) = array($V,$M,$N);
 				break;
