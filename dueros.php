@@ -71,8 +71,8 @@ class dueros{
 				break;
 			case 'SetBrightnessPercentage':
 				//$privious = $this->priviousState();
-				if(!empty($additionalApplianceDetails["SetBrightnessPercentage"]) && !empty($this->obj->payload->brightness->value)){
-					$detail = $additionalApplianceDetails["SetBrightnessPercentage"];
+				if(!empty($additionalApplianceDetails["setBrightnessPercentage"]) && !empty($this->obj->payload->brightness->value)){
+					$detail = $additionalApplianceDetails["setBrightnessPercentage"];
 					$payload[$detail] = $this->obj->payload->brightness->value;
 				}
 				$payload["entity_id"] = $applianceId;
