@@ -21,28 +21,28 @@ function Hcontrol($o, $d){
 	if($result !== false){
 		switch($o->header->name){
 			case 'TurnOnRequest':
-				$payload = array("attributes" => "");
+				$payload = array("attributes" => array());
 				break;
 			case 'TimingTurnOnRequest':
-				$payload = array("attributes" => "");
+				$payload = array("attributes" => array());
 				break;
 			case 'TurnOffRequest':
-				$payload = array("attributes" => "");
+				$payload = array("attributes" => array());
 				break;
 			case 'TimingTurnOffRequest':
-				$payload = array("attributes" => "");
+				$payload = array("attributes" => array());
 				break;
 			case 'PauseRequest':
-				$payload = array("attributes" => "");
+				$payload = array("attributes" => array());
 				break;
 			case 'ContinueRequest':
-				$payload = array("attributes" => "");
+				$payload = array("attributes" => array());
 				break;
 			case 'SetBrightnessPercentageRequest':
-				$payload = array("previousState" => array("brightness" => array("value" => "null")), "brightness" => array("value" => $obj->payload->brightness->value), "attributes" => "");
+				$payload = array("previousState" => array("brightness" => array("value" => "null")), "brightness" => array("value" => $obj->payload->brightness->value), "attributes" => array());
 				break;
 			case 'SetColorRequest':
-				$payload = array("achievedState" => array("color" => $d->object2array($o->payload->color)), "attributes" => "");
+				$payload = array("achievedState" => array("color" => $d->object2array($o->payload->color)), "attributes" => array());
 				break;
 			//more
 			default:
@@ -69,7 +69,7 @@ function Hstatus($o, $d){
 	if($result){
 		switch($o->header->name) {
 			case 'GetHumidityRequest':
-				$payload = array( "humidity"=>array( "value" => ((int)$result["state"])/100 ) );
+				$payload = array( "humidity"=>array( "value" => (float)($result["state"]/100) ) );
 				break;
 			case "GetTemperatureReadingRequest":
 				$payload = array( "temperatureReading"=>array( "value" => (float)$result["state"], "scale" => "CELSIUS" ));
