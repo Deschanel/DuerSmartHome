@@ -2,6 +2,7 @@
 
 Fork From https://github.com/Deschanel/DuerSmartHome.git
 
+增加长期访问令牌支持
 Add Long-Lived Access Tokens Support
 
 # DuerSmartHome
