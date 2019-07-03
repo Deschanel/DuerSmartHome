@@ -1,3 +1,6 @@
+# Fork From https://github.com/Deschanel/DuerSmartHome.git
+# Add Long-Lived Access Tokens Support
+
 # DuerSmartHome
 This project is based on DuerOS &amp; HomeAssistant.
 注意看里面的注释

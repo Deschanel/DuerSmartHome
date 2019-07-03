@@ -155,43 +155,69 @@ class dueros{
 	//与hass传输
 	public function response($deviceType, $action, $payload, $callName){
 		if($callName == "services"){
-			$http_url = $this->hassURL."/api/".$callName."/".$deviceType."/".$action."?api_password=".$this->hassPASS;
-			error_log($http_url);
-			$ch = curl_init($http_url);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-			curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($payload));
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-			curl_setopt($ch, CURLOPT_HEADER, 0);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: '.strlen(json_encode($payload))));
-			$result = curl_exec($ch);
-			if(curl_errno($ch)){
-				print curl_error($ch);
-			}
-			curl_close($ch);
+			// $http_url = $this->hassURL."/api/".$callName."/".$deviceType."/".$action."?api_password=".$this->hassPASS;
+			// error_log($http_url);
+			// $ch = curl_init($http_url);
+			// curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			// curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+			// curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+			// curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($payload));
+			// curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+			// curl_setopt($ch, CURLOPT_HEADER, 0);
+			// curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: '.strlen(json_encode($payload))));
+			// $result = curl_exec($ch);
+			// if(curl_errno($ch)){
+				// print curl_error($ch);
+			// }
+			// curl_close($ch);
+            //-----------
+			//支持Long-Lived Access Tokens
+            $opts = array(
+                'http' => array(
+                    'method' => "POST",
+                    'header' => "Content-Type: application/json\r\n" . "Authorization: Bearer " . $this->hassPASS . "\r\n",
+                    'content' => json_encode($payload)
+                )
+            );
+            $context = stream_context_create($opts);
+            $http_url = $this->hassURL . "/api/" . $callName . "/" . $deviceType . "/" . $action;
+            $result = file_get_contents($http_url, false, $context);
+            //-------- 			
 		}elseif($callName == "states") {
-			$http_url = $this->hassURL."/api/".$callName."/".$payload."?api_password=".$this->hassPASS;
-			error_log($http_url);
-			$ch = curl_init($http_url);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-			curl_setopt($ch, CURLOPT_HEADER, 0);
-			//curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: '.strlen($payload)));
-			$result = curl_exec($ch);
-			$result = json_decode($result, true);
-			if(curl_errno($ch)){
-				print curl_error($ch);
-			}
-			curl_close($ch);
+			// $http_url = $this->hassURL."/api/".$callName."/".$payload."?api_password=".$this->hassPASS;
+			// error_log($http_url);
+			// $ch = curl_init($http_url);
+			// curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			// curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+			// curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+			// curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+			// curl_setopt($ch, CURLOPT_HEADER, 0);
+			// //curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: '.strlen($payload)));
+			// $result = curl_exec($ch);
+			// $result = json_decode($result, true);
+			// if(curl_errno($ch)){
+				// print curl_error($ch);
+			// }
+			// curl_close($ch);
+            //-----------
+			//支持Long-Lived Access Tokens
+            $opts = array(
+                "http" => array(
+                    "method" => "GET",
+                    "header" => "Content-Type: application/json\r\n" . "Authorization: Bearer " . $this->hassPASS . "\r\n"
+                )
+            );
+            $context = stream_context_create($opts);
+            $http_url = $this->hassURL . "/api/" . $callName . "/" . $payload;
+            $result = file_get_contents($http_url, false, $context);
+            //--------			
 		}
 		return $result;
 	}
 
 	//如名字
 	public function object2array($object) {
+		$array = array(); //避免提示变量不存在
 		if (is_object($object)) {
 			foreach ($object as $key => $value) {
 				$array[$key] = $value;
